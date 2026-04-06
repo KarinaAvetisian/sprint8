@@ -19,7 +19,6 @@ func TestAddGetDelete(t *testing.T) {
 	store := NewParcelStore(db)
 	parcel := getTestParcel()
 
-	// add
 	// добавьте новую посылку в БД, убедитесь в отсутствии ошибки и наличии идентификатора
 	id, err := store.Add(parcel)
 	require.NoError(t, err)
@@ -31,8 +30,6 @@ func TestAddGetDelete(t *testing.T) {
 	storedParcel, err := store.Get(id)
 	require.NoError(t, err)
 	require.Equal(t, parcel, storedParcel)
-
-	// удалите добавленную посылку, убедитесь в отсутствии ошибки
 	// проверьте, что посылку больше нельзя получить из БД
 	err = store.Delete(id)
 	require.NoError(t, err)
