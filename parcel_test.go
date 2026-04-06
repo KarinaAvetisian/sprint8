@@ -1,17 +1,17 @@
 package main
 
 import (
+	"database/sql"
+	"testing"
 	"time"
+
 	"github.com/stretchr/testify/require"
 	_ "modernc.org/sqlite"
 )
-	
 
-var (
 // TestAddGetDelete проверяет добавление, получение и удаление посылки
 func TestAddGetDelete(t *testing.T) {
 	// prepare
-	db, err := // настройте подключение к БД
 	db, err := sql.Open("sqlite", "tracker.db")
 	require.NoError(t, err)
 	defer db.Close()
@@ -48,7 +48,7 @@ func TestAddGetDelete(t *testing.T) {
 // TestSetAddress проверяет обновление адреса
 func TestSetAddress(t *testing.T) {
 	// prepare
-	db, err := // настройте подключение к БД
+
 	db, err := sql.Open("sqlite", "tracker.db")
 	require.NoError(t, err)
 	defer db.Close()
@@ -79,7 +79,7 @@ func TestSetAddress(t *testing.T) {
 // TestSetStatus проверяет обновление статуса
 func TestSetStatus(t *testing.T) {
 	// prepare
-	db, err := // настройте подключение к БД
+
 	db, err := sql.Open("sqlite", "tracker.db")
 	require.NoError(t, err)
 	defer db.Close()
@@ -90,7 +90,6 @@ func TestSetStatus(t *testing.T) {
 	id, err := store.Add(parcel)
 	require.NoError(t, err)
 	require.NotZero(t, id)
-
 
 	// обновите статус, убедитесь в отсутствии ошибки
 	err = store.SetStatus(id, ParcelStatusSent)
@@ -107,33 +106,36 @@ func TestSetStatus(t *testing.T) {
 
 // TestGetByClient проверяет получение посылок по идентификатору клиента
 func TestGetByClient(t *testing.T) {
-	// prepare
-	db, err := // настройте подключение к БД
 	db, err := sql.Open("sqlite", "tracker.db")
 	require.NoError(t, err)
 	defer db.Close()
 	store := NewParcelStore(db)
+	client := int(time.Now().UnixNano())
 
 	parcels := []Parcel{
 		getTestParcel(),
+		getTestParcel(),
+		getTestParcel(),
+	}
+
+	parcelMap := make(map[int]Parcel)
 
 	// add
 	for i := 0; i < len(parcels); i++ {
-		id, err := // добавьте новую посылку в БД, убедитесь в отсутствии ошибки и наличии идентификатора
+
+		parcels[i].Client = client
+
 		id, err := store.Add(parcels[i])
 		require.NoError(t, err)
 		require.NotZero(t, id)
 
-		// обновляем идентификатор добавленной у посылки
 		parcels[i].Number = id
+		parcelMap[id] = parcels[i]
 	}
 
 	// get by client
-	storedParcels, err := // получите список посылок по идентификатору клиента, сохранённого в переменной client
 	storedParcels, err := store.GetByClient(client)
-	// убедитесь в отсутствии ошибки
 	require.NoError(t, err)
-	// убедитесь, что количество полученных посылок совпадает с количеством добавленных
 	require.Len(t, storedParcels, len(parcels))
 
 	// check
@@ -152,5 +154,14 @@ func TestGetByClient(t *testing.T) {
 
 	for _, parcel := range parcels {
 		_ = store.Delete(parcel.Number)
+	}
+
+}
+func getTestParcel() Parcel {
+	return Parcel{
+		Client:    1000,
+		Status:    ParcelStatusRegistered,
+		Address:   "test address",
+		CreatedAt: time.Now().UTC().Format(time.RFC3339), // Добавьте это значение
 	}
 }
