@@ -25,7 +25,6 @@ func TestAddGetDelete(t *testing.T) {
 	require.NotZero(t, id)
 	parcel.Number = id
 
-	// получите только что добавленную посылку, убедитесь в отсутствии ошибки
 	// проверьте, что значения всех полей в полученном объекте совпадают со значениями полей в переменной parcel
 	storedParcel, err := store.Get(id)
 	require.NoError(t, err)
@@ -123,7 +122,6 @@ func TestGetByClient(t *testing.T) {
 		parcels[i].Number = id
 		parcelMap[id] = parcels[i]
 	}
-
 	storedParcels, err := store.GetByClient(client)
 	require.NoError(t, err)
 	require.Len(t, storedParcels, len(parcels)) // Теперь количество совпадет
