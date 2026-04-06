@@ -26,14 +26,12 @@ func TestAddGetDelete(t *testing.T) {
 	require.NotZero(t, id)
 	parcel.Number = id
 
-	// get
 	// получите только что добавленную посылку, убедитесь в отсутствии ошибки
 	// проверьте, что значения всех полей в полученном объекте совпадают со значениями полей в переменной parcel
 	storedParcel, err := store.Get(id)
 	require.NoError(t, err)
 	require.Equal(t, parcel, storedParcel)
 
-	// delete
 	// удалите добавленную посылку, убедитесь в отсутствии ошибки
 	// проверьте, что посылку больше нельзя получить из БД
 	err = store.Delete(id)
